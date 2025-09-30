@@ -35,7 +35,7 @@ void main() {
       final libro = LibroModel(
         id: 1,
         titulo: "Prueba Code",
-        anio: 2008,
+        anioPublicacion: 2008,
         genero: "Programación",
         autor: AutorModel(id: 10, nombre: "Daniel Castro", pais: "Estados Unidos"),
         categorias: [

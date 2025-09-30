@@ -7,7 +7,7 @@ import 'package:biblioteca_mejorada/domain/usecases/get_libro_by_id.dart';
 import 'package:biblioteca_mejorada/domain/usecases/get_libros.dart';
 import 'package:biblioteca_mejorada/domain/usecases/update_libro.dart';
 import 'package:biblioteca_mejorada/presentation/LibrosProvider.dart';
-
+import 'package:biblioteca_mejorada/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        home: Container(), // Aquí pondrás tu HomeScreen
+        home: HomeScreen(), 
       ),
     );
   }
