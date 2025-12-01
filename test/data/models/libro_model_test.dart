@@ -1,56 +1,94 @@
+import 'package:biblioteca_mejorada/data/models/autor_model.dart';
+import 'package:biblioteca_mejorada/data/models/categoria_moder.dart';
 import 'package:biblioteca_mejorada/data/models/libro_model.dart';
+import 'package:biblioteca_mejorada/data/models/resenias_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-
 void main() {
-  group('LibroModel', () {
-    test('fromJson crea un objeto válido con autor, categorias y reseñas', () {
-      final json = {
+  group("Tester LibroModel", () {
+    test("LibroModel: tiene que devolver un modelo (objeto)", () {
+      //arrange (simulo un json que viene del backend )
+      final model = {
         "id": 1,
-        "titulo": "Prueba Code",
-        "año": 2008,
+        "titulo": "Clean Code",
+        "año": 2022,
         "genero": "Programación",
-        "autor": {
-          "id": 10,
-          "nombre": "Daniel Castro",
-          "pais": "Estados Unidos"
-        },
+        "autor": {"id": 1, "nombre": "Robert", "pais": "USA"},
         "categorias": [
-          {"id": 1, "nombre": "Desarrollo"},
-          {"id": 2, "nombre": "Buenas prácticas"}
+          {"id": 1, "nombre": "Dev"},
+          {"id": 2, "nombre": "Desarrollo"},
         ],
-        "reseñas": []
+        "reseñas": [
+          {
+            "id": 1,
+            "usuario": "Luis",
+            "comentario": "Buen libro",
+            "calificacion": 5,
+          },
+          {
+            "id": 2,
+            "usuario": "Erend",
+            "comentario": "Exelente libro para aprender",
+            "calificacion": 10,
+          },
+        ],
       };
 
-      final libro = LibroModel.fromJson(json);
+      // ACT( creo instancia para convertirlo a objeto)
+      final libro = LibroModel.fromJson(model);
 
+      // assert (Valido datos del objeto)
+      // LibroModel
       expect(libro.id, 1);
-      expect(libro.titulo, "Prueba Code");
-      expect(libro.autor.nombre, "Daniel Castro");
+      expect(libro.titulo, "Clean Code");
+      expect(libro.anio, 2008);
+      expect(libro.genero, "Programación");
+      // Autor
+      expect(libro.autor.id, 1);
+      expect(libro.autor.nombre, "Robert");
+      expect(libro.autor.pais, "USA");
+      // Categorias
       expect(libro.categorias.length, 2);
-      expect(libro.resenias.isEmpty, true);
+      expect(libro.categorias[0].id, 1);
+      expect(libro.categorias[0].nombre, "Dev");
+      expect(libro.categorias[1].nombre, "Desarrollo");
+      //Reseñas
+      expect(libro.resenias.length, 2);
+      expect(libro.resenias[0].id, 1);
+      expect(libro.resenias[0].usuario, "Luis");
+      expect(libro.resenias[0].comentario, "Buen libro");
+      expect(libro.resenias[0].calificacion, 5);
+
+      expect(libro.resenias[0].id, 2);
+      expect(libro.resenias[0].usuario, "Erend");
+      expect(libro.resenias[0].comentario, "Exelente libro para aprender");
+      expect(libro.resenias[0].calificacion, 5);
     });
 
-    test('toJson regresa un mapa válido', () {
-      final libro = LibroModel(
+    test("toJson Se testea de json a modelo", () {
+      final model_2 = LibroModel(
         id: 1,
-        titulo: "Prueba Code",
+        titulo: "Clean Code",
         anio: 2008,
         genero: "Programación",
-        autor: AutorModel(id: 10, nombre: "Daniel Castro", pais: "Estados Unidos"),
-        categorias: [
-          CategoriaModel(id: 1, nombre: "Desarrollo"),
-          CategoriaModel(id: 2, nombre: "Buenas prácticas"),
+        autor: AutorModel(id: 1, nombre: "Robert", pais: "USA"),
+        categorias: [CategoriaModel(id: 1, nombre: "Dev")],
+        resenias: [
+          ReseniasModel(
+            id: 1,
+            usuario: "Luis",
+            comentario: "Buen libro",
+            calificacion: 9,
+          ),
         ],
-        resenias: [],
       );
 
-      final json = libro.toJson();
-
+      final json = model_2.toJson(); //
       expect(json["id"], 1);
-      expect(json["titulo"], "Prueba Code");
-      expect(json["autor"]["nombre"], "Daniel Castro");
-      expect((json["categorias"] as List).length, 2);
+      expect(json["titulo"], "Clean Code");
+      expect(json["autor"]["nombre"], "Robert");
+      expect((json["categorias"] as List).length, 1);
+      expect((json["resenias"] as List).first["usuario"], "Luis");
     });
   });
 }

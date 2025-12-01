@@ -11,8 +11,8 @@ class LibrosRepositoryImpl implements LibrosRepository {
   LibrosRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<List<LibroEntity>> getLibros() async {
-    final librosModel = await remoteDatasource.getLibros();
+  Future<List<LibroEntity>> getAllLibros() async {
+    final librosModel = await remoteDatasource.getAllLibros();
     // LibroModel extiende LibroEntity, por eso se puede retornar así directamente
     return librosModel;
   }
@@ -45,3 +45,21 @@ class LibrosRepositoryImpl implements LibrosRepository {
     return true;
   }
 }
+
+
+
+// [
+//   {
+//     "id": 0,
+//     "titulo": "string",
+//     "año": 0,
+//     "genero": "string",
+//     "autor": {
+//       "id": 0,
+//       "nombre": "string",
+//       "pais": "string"
+//     },
+//     "categorias": [],
+//     "reseñas": []
+//   }
+// ]

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 
 abstract class LibrosRemoteDatasource {
-  Future<List<LibroModel>> getLibros();
+  Future<List<LibroModel>> getAllLibros(); //Tendere una lista de entidades(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
   Future<LibroModel> getLibroById(int id);
   Future<LibroModel> createLibro(LibroModel libro);
   Future<LibroModel> updateLibro(int id, LibroModel libro);
@@ -19,7 +19,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   LibrosRemoteDataSourceImpl({required this.cliente, required this.baseUrl});
 
   @override
-  Future<List<LibroModel>> getLibros() async {
+  Future<List<LibroModel>> getAllLibros() async {
     final response = await cliente.get(Uri.parse("$baseUrl/books/"));
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
