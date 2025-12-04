@@ -11,11 +11,11 @@ class LibroEntity {
   final List<CategoriaEntity> categorias;
   final List<ReseniasEntity> resenias;
 
-  LibroEntity({
+  const LibroEntity({
     required this.id,
     required this.titulo,
-    required this.anio,
-    required this.genero,
+    this.anioPublicacion,
+    this.genero,
     required this.autor,
     required this.categorias,
     required this.resenias,

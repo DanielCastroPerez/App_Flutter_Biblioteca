@@ -6,126 +6,109 @@ import 'package:biblioteca_mejorada/domain/usecases/get_libros.dart';
 import 'package:biblioteca_mejorada/domain/usecases/update_libro.dart';
 import 'package:flutter/material.dart';
 
-class LibrosProvider with ChangeNotifier {
+enum LibrosState {
+  initial,
+  loading,
+  loaded,
+  error,
+} // Estados posibles para la gestion de libros
+
+class LibrosProvider extends ChangeNotifier {
   // todos los casos de uso que tenemos
   final GetLibrosUseCase getLibrosUseCase;
-  final CreateLibroUseCase createLibroUseCase;
   final GetLibroByIdUseCase getLibroByIdUseCase;
-  final DeleteLibroUseCase deleteLibroUseCase;
+  final CreateLibroUseCase createLibroUseCase;
   final UpdateLibroUseCase updateLibroUseCase;
+  final DeleteLibroUseCase deleteLibroUseCase;
+
+  List<LibroEntity> libros = [];
+  LibroEntity? selectedLibro;
+  LibrosState state = LibrosState.initial; // estado inicial
+  String? errorMessage;
 
   LibrosProvider({
+    required this.getLibrosUseCase,
     required this.getLibroByIdUseCase,
     required this.createLibroUseCase,
-    required this.getLibrosUseCase,
-    required this.deleteLibroUseCase,
     required this.updateLibroUseCase,
+    required this.deleteLibroUseCase,
   });
 
-  // variables privadas
-  List<LibroEntity> _libros = [];
-  LibroEntity? _selectedLibro; // es una entidad {nombre:"", apellido:""}
-  bool _isLoading = false;
-  String? _errorMessage;
-
-  // Getters para exponer el estado [tipo de retorno get variable_privada]
-  List<LibroEntity> get libros => _libros;
-  LibroEntity? get selectedLibro => _selectedLibro; // porque no puedo usar esta variable para cuandi haga un update? esta variable seria el libro que voy a odificar
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-
-  Future<void> fetchLibros() async {
-    _isLoading = true;
+  // Metodo para obtener todos los libros
+  Future<void> getLibros() async {
+    state = LibrosState.loading;
     notifyListeners();
     try {
-      _libros = await getLibrosUseCase();
-      _errorMessage = null;
+      final result = await getLibrosUseCase();
+      libros = result;
+      state = LibrosState.loaded;
     } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      errorMessage = e.toString();
+      state = LibrosState.error;
     }
+    notifyListeners();
   }
 
+  // Metodo para obtener un libro por su ID
   Future<void> fetchLibroById(int id) async {
-    _isLoading = true;
+    state = LibrosState.loading;
     notifyListeners();
     try {
-      _selectedLibro = await getLibroByIdUseCase(id);
-      _errorMessage = null;
+      final resultLibro = await getLibroByIdUseCase(id);
+      selectedLibro = resultLibro;
+      state = LibrosState.loaded;
     } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      errorMessage = e.toString();
+      state = LibrosState.error;
     }
+    notifyListeners();
   }
 
-  Future<void> addLibro(LibroEntity libro) async {
-    _isLoading = true;
+  // Metodo para actualizar un libro
+  Future<void> addLibros(LibroEntity libro) async {
+    state = LibrosState.loading;
     notifyListeners();
     try {
-      final nuevo = await createLibroUseCase(libro);
-      _libros.add(nuevo);
-      _errorMessage = null;
+      final nuevoLibro = await createLibroUseCase(libro);
+      libros.add(nuevoLibro);
+      state = LibrosState.loaded;
     } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      errorMessage = e.toString();
+      state = LibrosState.error;
     }
+    notifyListeners();
   }
 
   Future<void> updateLibro(int id, LibroEntity libro) async {
-    _isLoading = true;
-    notifyListeners(); // notifica los cambios
+    state = LibrosState.loading;
+    notifyListeners();
     try {
-      final actualizado = await updateLibroUseCase(id, libro);
-      final index = _libros.indexWhere((e) => e.id == id);
+      final libroActualizado = await updateLibroUseCase(id, libro);
+      final index = libros.indexWhere(
+        (e) => e.id == id,
+      ); // index obtiene la posicion del libro en la lista
       if (index != -1) {
-        _libros[index] = actualizado;
+        libros[index] = libroActualizado;
       }
-      _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      errorMessage = e.toString();
+      state = LibrosState.error;
     }
+    notifyListeners();
   }
 
   Future<void> deleteLibro(int id) async {
-    _isLoading = true;
+    state = LibrosState.loading;
     notifyListeners();
     try {
-      bool estado = await deleteLibroUseCase(id);
-      _libros.removeWhere((l) => l.id == id);
-      _errorMessage = null;
+      final success = await deleteLibroUseCase(id);
+      if (success) {
+        libros.removeWhere((e) => e.id == id);
+        state = LibrosState.loaded;
+      }
     } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      errorMessage = e.toString();
+      state = LibrosState.error;
     }
   }
 }
-
-
-// Dudas frecuentes jej
-// 1. ¿Por qué los Future<void> no retornan nada?
-// El use case (getLibrosUseCase) sí retorna List<LibroEntity>.
-// El provider (fetchLibros) recibe eso, actualiza su estado interno (_libros) y notifica a la UI con notifyListeners().
-// La UI no necesita el return, porque accede a los getters:
-
-/*¿El Provider guarda todas las respuestas de la API en una lista ficticia?
-
-Exacto ✅
-
-El Provider funciona como tu cache en memoria de lo que ya descargaste/actualizaste de la API.
-
-Esa lista (_libros) no es la base de datos real, pero refleja el estado de la API.
-
-Esa lista es la que alimenta la UI (con **notifyListeners()** haces que los widgets se redibujen cuando cambia la lista).
-
-👉 Piensa que el Provider = fuente de verdad dentro de la app mientras la app está abierta.*/
