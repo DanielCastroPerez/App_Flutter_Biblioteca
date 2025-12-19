@@ -14,8 +14,8 @@ class LibroEntity {
   const LibroEntity({
     required this.id,
     required this.titulo,
-    this.anioPublicacion,
-    this.genero,
+    required this.anio,
+    required this.genero,
     required this.autor,
     required this.categorias,
     required this.resenias,

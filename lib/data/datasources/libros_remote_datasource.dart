@@ -1,3 +1,4 @@
+// creo una clase abstarcta para hacer los contratos que despues se conectaran con al capa de dominio/repositories
 import 'dart:convert';
 
 import 'package:biblioteca_mejorada/data/models/libro_model.dart';
@@ -5,24 +6,30 @@ import 'package:http/http.dart' as http;
 
 
 abstract class LibrosRemoteDatasource {
-  Future<List<LibroModel>> getAllLibros(); //Tendere una lista de entidades(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
+  // porque creo otra vez los contratos y no reutilizo los que hicec en domain/repositories? Respuesta ,por que la capa de dominio no conoce data y data no conoce a dominio
+  Future<List<LibroModel>>
+  getAllLibros(); //Tendere una lista de modelos(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
   Future<LibroModel> getLibroById(int id);
   Future<LibroModel> createLibro(LibroModel libro);
   Future<LibroModel> updateLibro(int id, LibroModel libro);
-  Future<void> deleteLibro(int id);
+  Future<bool> deleteLibro(int id);
 }
 
 class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   final http.Client cliente;
-  final String baseUrl;
+  final String baseUrl; // obtendra la url
+  
 
-  LibrosRemoteDataSourceImpl({required this.cliente, required this.baseUrl});
+  LibrosRemoteDataSourceImpl({required this.baseUrl, required this.cliente});
 
+  // se declaran los contratos de LibrosRemoteDatasource
   @override
   Future<List<LibroModel>> getAllLibros() async {
     final response = await cliente.get(Uri.parse("$baseUrl/books/"));
     if (response.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<dynamic> jsonList = jsonDecode(
+        response.body,
+      ); // creo una lista porque es una lista de objetos
       return jsonList
           .map((e) => LibroModel.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -35,8 +42,12 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   Future<LibroModel> getLibroById(int id) async {
     final response = await cliente.get(Uri.parse("$baseUrl/books/$id"));
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
-      return LibroModel.fromJson(jsonMap);
+      final Map<String, dynamic> json = jsonDecode(
+        response.body,
+      ); // aqui creo un Map ya que  retornare un [Future<LibroModel>] objeto y un objeto es un diccionario
+      return LibroModel.fromJson(
+        json,
+      ); // retorno el objeto lo que nececita la funcion [getLibroById]
     } else {
       throw Exception("Error al cargar libro $id: ${response.statusCode}");
     }
@@ -44,6 +55,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
 
   @override
   Future<LibroModel> createLibro(LibroModel libro) async {
+    // async significa que puede trabajar de manera asincrona son operaciones podrían tardar en completarse sin bloquear el hilo de ejecución principal.
     final response = await cliente.post(
       Uri.parse("$baseUrl/books/"),
       headers: {"Content-Type": "application/json"},
@@ -60,9 +72,10 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
 
   @override
   Future<LibroModel> updateLibro(int id, LibroModel libro) async {
+    // sera una funcion asincrona
     final response = await cliente.put(
       Uri.parse("$baseUrl/books/$id"),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "aplication/json"},
       body: jsonEncode(libro.toJson()),
     );
 
@@ -77,11 +90,11 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   }
 
   @override
-  Future <bool> deleteLibro(int id) async {
+  Future<bool> deleteLibro(int id) async {
     final response = await cliente.delete(Uri.parse("$baseUrl/books/$id"));
     if (response.statusCode == 204) {
       return true;
-    }else{
+    } else {
       throw Exception("Error al eliminar el libro $id: ${response.statusCode}");
     }
   }

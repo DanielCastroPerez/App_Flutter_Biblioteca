@@ -7,7 +7,7 @@ class LibroModel extends LibroEntity {
   const LibroModel({
     required super.id,
     required super.titulo,
-    required super.anioPublicacion,
+    required super.anio,
     required super.genero,
     required super.autor,
     required super.categorias,
@@ -72,3 +72,4 @@ class LibroModel extends LibroEntity {
     // Lo mismo con resenias: convertimos cada reseña a JSON y las guardamos todas en una lista
     "reseñas": resenias.map((r) => (r as ReseniasModel).toJson()).toList(),
   };
+}
