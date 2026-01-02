@@ -6,7 +6,7 @@ class GetLibrosUseCase {
   GetLibrosUseCase({required this.repository});
 
   Future<List<LibroEntity>> call() async {
-    return await repository.getLibros();
+    return await repository.getAllLibros();
   }
 }
 
