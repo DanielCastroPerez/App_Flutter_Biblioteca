@@ -4,19 +4,19 @@ import 'dart:convert';
 import 'package:biblioteca_mejorada/data/models/libro_model.dart';
 import 'package:http/http.dart' as http;
 
-
+// contratos de la capa de datos para conectarse con una API REST
+/// Contratos que vienen de la capa Data/datasource [Future LibroModel] http.
 abstract class LibrosRemoteDatasource {
-  // porque creo otra vez los contratos y no reutilizo los que hicec en domain/repositories? Respuesta ,por que la capa de dominio no conoce data y data no conoce a dominio
-  Future<List<LibroModel>>
-  getAllLibros(); //Tendere una lista de modelos(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
+  // ¿Por qué creo otra vez los contratos y no reutilizo los que hice en domain/repositories? Respuesta: Porque la capa de dominio no conoce data y data no conoce a dominio.
+  Future<List<LibroModel>> getAllLibros(); //Tendere una lista de modelos(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
   Future<LibroModel> getLibroById(int id);
   Future<LibroModel> createLibro(LibroModel libro);
   Future<LibroModel> updateLibro(int id, LibroModel libro);
   Future<bool> deleteLibro(int id);
 }
-
+/// implementacion de los contratos de LibrosRemoteDatasource data(capa de datos)+http+api rest
 class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
-  final http.Client cliente;
+  final http.Client cliente; // cliente http para hacer las peticiones
   final String baseUrl; // obtendra la url
   
 
@@ -44,7 +44,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(
         response.body,
-      ); // aqui creo un Map ya que  retornare un [Future<LibroModel>] objeto y un objeto es un diccionario
+      ); // aqui creo un [Map] ya que  retornare un [Future<LibroModel>] objeto y un objeto es un diccionario
       return LibroModel.fromJson(
         json,
       ); // retorno el objeto lo que nececita la funcion [getLibroById]
@@ -56,10 +56,10 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   @override
   Future<LibroModel> createLibro(LibroModel libro) async {
     // async significa que puede trabajar de manera asincrona son operaciones podrían tardar en completarse sin bloquear el hilo de ejecución principal.
-    final response = await cliente.post(
+    final response = await cliente.post( // await [espera] a que se complete la operacion asincrona
       Uri.parse("$baseUrl/books/"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(libro.toJson()),
+      headers: {"Content-Type": "application/json"}, // especifica que el contenido es json
+      body: jsonEncode(libro.toJson()), // convierte el objeto libro a json
     );
 
     if (response.statusCode == 201) {

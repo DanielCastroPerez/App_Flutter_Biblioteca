@@ -1,5 +1,5 @@
 import 'package:biblioteca_mejorada/domain/entities/libro_entity.dart';
-
+/// Contratos que vienen de la capa de dominio [Future LibroEntity]
 abstract class LibrosRepository {
   Future<List<LibroEntity>> getAllLibros(); // recibo una lista de LibroEntity [{ ... libro 1 ... },{ ... libro 2 ... }]
   Future<LibroEntity> getLibroById(int id); // [ LibroEntity(), LibroEntity(), LibroEntity() ]
