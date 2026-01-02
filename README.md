@@ -1,38 +1,96 @@
-# biblioteca_mejorada
+# **Biblioteca Mejorada**
 
-## Analogía de Clean Architecture en mi mente
-
-# Capa Domain
-domain (capa de los fifís/poderosos que no se ensucian las manos para traer información)  
-- **domain/entities** → las clases con sus atributos y constructores.  
-- **domain/repositories** → una persona que tiene contratos para obtener un CRUD (update, getById, etc).  
-  Él conoce a personas de trabajo sucio que saben conseguir información (**data/repositories**).  
-- **domain/usecase** → Los casos que se usarán o la información que se necesita.  
-  Conoce a una persona que puede traer información (contratos).  
-  El caso de uso solo recibe y da lo que necesita: id, entidades, etc.  
+Este es un proyecto en Flutter donde construyo una pequeña app de biblioteca conectada a una API. Lo uso principalmente para practicar **Clean Architecture**, manejar estado con **Provider** y trabajar con **pruebas unitarias**, todo en un entorno sencillo para seguir mejorando.
 
 ---
 
-# Capa Data
-- **data/modelos** → una clase que hereda de entities y las convierte de JSON a modelo y de modelo a JSON para enviar al backend.  
-- **data/repositories** → Es una persona de abajo que no se ensucia tanto las manos, pero trae cosas sucias.  
-  También tiene contratos. Conoce a alguien de la alta sociedad que necesita información y lo contacta,  
-  y le proporciona un CRUD (id, datos_nuevos).  
-  Este **data/repositories** conoce a una persona que se encarga de investigar los datos que le proporcionaron,  
-  pero no sabe cómo lo hace, solo sabe que los consigue. Por eso conoce a **data/datasource**.  
-- **data/datasource** → Es el mañoso que consigue cierta información requerida, información sucia o privada,  
-  por medio de una API. Esa API le devuelve un resultado y se lo pasa a **data/repositories**,  
-  el que sabe conseguir información sin mancharse tanto las manos.  
-  Después se lo pasa a **domain/repositories**, que es el fifi/poderoso que no se ensucia las manos,  
-  pero necesitaba la información.  
+## **Características**
+
+* **CRUD completo** de libros (listar, obtener por ID, crear, editar y eliminar).
+* Comunicación con una **API remota** usando HTTP.
+* Manejo de estado con **Provider**.
+* Proyecto organizado con **Clean Architecture** para mantener el código limpio y fácil de probar.
 
 ---
 
-# Capa Presentación
-- **Provider** → Tiene todos los **domain/usecase**, sabe las cosas que se pueden conseguir.  
-  Es una persona de más alta sociedad que domain (jajaja).  
-  Solo se puede comunicar con Entities, no se junta con la chusma para conseguir información.  
-  Crea una lista ficticia que refleja en la sociedad/UI.  
-  Solo obtendrá o manejará la información que le fue proporcionada por **domain/usecase**,  
-  que fue investigada o conseguida por **data/datasource** / API.  
--***UI** → Es como el teatro donde se presenta todo bonito. No sabe nada de cómo se consiguió la info, solo recibe y muestra.
+## **Stack / Dependencias principales**
+
+* Flutter SDK (ver versión en `pubspec.yaml`).
+* `provider`, `http`, `flutter_dotenv`, `fpdart`.
+
+---
+
+## **Arquitectura (visión general)**
+
+* **presentation/**: Widgets, pantallas y el `LibrosProvider`.
+* **domain/**: Entidades, repositorios y casos de uso.
+* **data/**: DataSources, Models y repositorio.
+* **core/**: Configuración general (variables de entorno, helpers, etc.).
+
+---
+
+## **Estructura rápida del proyecto**
+
+* `lib/main.dart`: Punto de entrada. Se crea el datasource, repositorio, casos de uso y el Provider.
+* `lib/core/env.dart`: Lectura de `API_BASE_URL`.
+* `lib/data/datasources/libros_remote_datasource.dart`: Llamadas HTTP.
+* `lib/data/repositories/libros_repository_impl.dart`: Implementación del repositorio.
+* `lib/domain/usecases/`: Casos de uso (Get, Create, Update, Delete).
+* `lib/presentation/LibrosProvider.dart`: Lógica de estado conectada a la UI.
+
+---
+
+## **Variables de entorno**
+
+Archivo `.env` en la raíz del proyecto:
+
+```
+API_BASE_URL=tu_url_aqui
+```
+
+---
+
+## **Cómo ejecutar**
+
+1. Tener Flutter instalado.
+2. Crear un archivo `.env` con la URL base.
+3. Instalar dependencias:
+
+   ```bash
+   flutter pub get
+   ```
+4. Ejecutar la app:
+
+   ```bash
+   flutter run
+   ```
+
+---
+
+## **Tests**
+
+El proyecto incluye pruebas para modelos, repositorios y casos de uso.
+
+Ejecutar tests:
+
+```bash
+flutter test
+```
+
+---
+
+## **Flujo interno (resumen rápido)**
+
+1. `main.dart` crea el datasource con `http.Client` y la URL del `.env`.
+2. Se construye el repositorio.
+3. Se inicializan los casos de uso.
+4. `LibrosProvider` se registra en el `MultiProvider` y la UI lo consume.
+
+---
+
+## **Notas y mejoras futuras**
+
+* Mejorar conversión entre Models y Entities sin usar `dynamic`.
+* Manejo más claro de errores usando Either/Failure.
+* Crear un archivo de inyección de dependencias (`injection.dart`).
+* Añadir pruebas para casos de error y escenarios límite.
