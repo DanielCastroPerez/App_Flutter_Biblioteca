@@ -12,3 +12,9 @@ class CreateLibroUseCase{
 
   }
 }
+
+
+// Use Cases
+
+// Los casos de uso orquestan una acción del negocio.
+// Cada caso de uso representa una intención clara.

@@ -12,3 +12,7 @@ abstract class LibrosRepository {
 // Cuando se ejecute este método
 // Debo devolver una lista (List)
 // De entidades (LibroEntity)
+
+// Repositories (contratos)
+// Los repositories en domain son contratos abstractos.
+// Definen qué se puede hacer, no cómo se hace.

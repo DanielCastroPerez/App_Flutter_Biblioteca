@@ -20,7 +20,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   final String baseUrl; // obtendra la url
   
 
-  LibrosRemoteDataSourceImpl({required this.baseUrl, required this.cliente});
+  LibrosRemoteDataSourceImpl({required this.cliente ,required this.baseUrl});
 
   // se declaran los contratos de LibrosRemoteDatasource
   @override
@@ -32,7 +32,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
       ); // creo una lista porque es una lista de objetos
       return jsonList
           .map((e) => LibroModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+          .toList(); // Mapeamos  porque prometimosuna lista de objetos [<List<LibroModel>>]
     } else {
       throw Exception("Error al cargar libros: ${response.statusCode}");
     }
@@ -75,7 +75,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
     // sera una funcion asincrona
     final response = await cliente.put(
       Uri.parse("$baseUrl/books/$id"),
-      headers: {"Content-Type": "aplication/json"},
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode(libro.toJson()),
     );
 
@@ -99,3 +99,9 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
     }
   }
 }
+
+
+// Datasources
+
+// El datasource es el encargado de hablar con el mundo exterior (API).
+// Aquí viven los endpoints, HTTP, status codes y JSON.

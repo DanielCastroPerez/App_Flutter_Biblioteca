@@ -13,3 +13,9 @@ class AutorModel extends AutorEntity {
 
   Map<String, dynamic> toJson() => {"id": id, "nombre": nombre, "pais": pais};
 }
+
+// Models
+
+// Los modelos representan la estructura real de los datos externos (API).
+// Se encargan de convertir JSON ↔ objeto. 
+// Usas herencia (polimorfismo)
