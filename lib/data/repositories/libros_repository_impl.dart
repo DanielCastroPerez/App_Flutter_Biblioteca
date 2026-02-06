@@ -119,3 +119,12 @@ class LibrosRepositoryImpl implements LibrosRepository {
     return true;
   }
 }
+
+
+// Repository Implementation
+
+// El repository de data implementa el contrato de domain y conecta los datasources con los casos de uso.
+// Traducción:
+// Domain pide entidades
+// Data obtiene modelos
+// Gracias al polimorfismo, devuelve LibroEntity
