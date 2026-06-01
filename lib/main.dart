@@ -7,24 +7,23 @@ import 'package:biblioteca_mejorada/domain/usecases/get_libro_by_id.dart';
 import 'package:biblioteca_mejorada/domain/usecases/get_libros.dart';
 import 'package:biblioteca_mejorada/domain/usecases/update_libro.dart';
 import 'package:biblioteca_mejorada/presentation/providers/LibrosProvider.dart';
-import 'package:biblioteca_mejorada/presentation/screens/libros_page.dart';
+import 'package:biblioteca_mejorada/presentation/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-void main()  {
+void main() {
   final client = http.Client();
   dotenv.load(fileName: ".env");
 
   final remoteDatasource = LibrosRemoteDataSourceImpl(
-    baseUrl:"http://10.0.2.2:8000",//EnvConfig.apiUrl, //"http://localhost:8000" "http://10.0.2.2:8000"
+    baseUrl:
+        "http://10.0.2.2:8000", //EnvConfig.apiUrl, //"http://localhost:8000" "http://10.0.2.2:8000"
     cliente: client,
   );
 
-  final repository = LibrosRepositoryImpl(
-    remoteDatasource: remoteDatasource,
-  );
+  final repository = LibrosRepositoryImpl(remoteDatasource: remoteDatasource);
 
   final getLibrosUseCase = GetLibrosUseCase(repository: repository);
   final getLibroByIdUseCase = GetLibroByIdUseCase(repository: repository);
@@ -45,13 +44,12 @@ void main()  {
     ),
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LibrosPage(),
-    );
+    return const MaterialApp(home: Home());
   }
 }

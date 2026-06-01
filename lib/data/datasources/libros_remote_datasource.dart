@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 abstract class LibrosRemoteDatasource {
   // ¿Por qué creo otra vez los contratos y no reutilizo los que hice en domain/repositories? Respuesta: Porque la capa de dominio no conoce data y data no conoce a dominio.
   Future<List<LibroModel>> getAllLibros(); //Tendere una lista de modelos(objetos) [ LibroEntity(), LibroEntity(), LibroEntity() ]
-  Future<LibroModel> getLibroById(int id);
+  Future<LibroModel> getLibroById(int id); // no tiene List porque solo obtendremos un libro y un libro es un modelo(objetos)
   Future<LibroModel> createLibro(LibroModel libro);
   Future<LibroModel> updateLibro(int id, LibroModel libro);
   Future<bool> deleteLibro(int id);
@@ -25,7 +25,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   // se declaran los contratos de LibrosRemoteDatasource
   @override
   Future<List<LibroModel>> getAllLibros() async {
-    final response = await cliente.get(Uri.parse("$baseUrl/books/"));
+    final response = await cliente.get(Uri.parse("$baseUrl/biblioteca/"));
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(
         response.body,
@@ -40,7 +40,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
 
   @override
   Future<LibroModel> getLibroById(int id) async {
-    final response = await cliente.get(Uri.parse("$baseUrl/books/$id"));
+    final response = await cliente.get(Uri.parse("$baseUrl/biblioteca/$id"));
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(
         response.body,
@@ -57,7 +57,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   Future<LibroModel> createLibro(LibroModel libro) async {
     // async significa que puede trabajar de manera asincrona son operaciones podrían tardar en completarse sin bloquear el hilo de ejecución principal.
     final response = await cliente.post( // await [espera] a que se complete la operacion asincrona
-      Uri.parse("$baseUrl/books/"),
+      Uri.parse("$baseUrl/biblioteca/"),
       headers: {"Content-Type": "application/json"}, // especifica que el contenido es json
       body: jsonEncode(libro.toJson()), // convierte el objeto libro a json
     );
@@ -74,7 +74,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
   Future<LibroModel> updateLibro(int id, LibroModel libro) async {
     // sera una funcion asincrona
     final response = await cliente.put(
-      Uri.parse("$baseUrl/books/$id"),
+      Uri.parse("$baseUrl/biblioteca/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(libro.toJson()),
     );
@@ -91,7 +91,7 @@ class LibrosRemoteDataSourceImpl extends LibrosRemoteDatasource {
 
   @override
   Future<bool> deleteLibro(int id) async {
-    final response = await cliente.delete(Uri.parse("$baseUrl/books/$id"));
+    final response = await cliente.delete(Uri.parse("$baseUrl/biblioteca/$id"));
     if (response.statusCode == 204) {
       return true;
     } else {
